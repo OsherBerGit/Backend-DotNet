@@ -9,44 +9,40 @@ namespace MyBackend.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly UserService _service;
+    private readonly IUserService _userService;
 
-    public UsersController(UserService service)
-    {
-        _service = service;
-    }
+        public UsersController(IUserService userService)
+        {
+            _userService = userService;
+        }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers() =>
-        Ok(await _service.GetAllUsersAsync());
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+            => Ok(await _userService.GetAllAsync());
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetUser(int id)
-    {
-        var user = await _service.GetUserByIdAsync(id);
-        return user == null ? NotFound() : Ok(user);
-    }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            return user == null ? NotFound() : Ok(user);
+        }
 
-    [HttpPost]
-    public async Task<ActionResult<UserDto>> CreateUser(UserDto dto)
-    {
-        var created = await _service.CreateUserAsync(dto);
-        return CreatedAtAction(nameof(GetUser), new { id = created.Id }, created);
-    }
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateUserDto dto)
+        {
+            var user = await _userService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+        }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, UserDto dto)
-    {
-        if (!_service.UserExists(id)) return NotFound();
-        await _service.UpdateUserAsync(id, dto);
-        return NoContent();
-    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, UpdateUserDto dto)
+        {
+            var user = await _userService.UpdateAsync(id, dto);
+            return user == null ? NotFound() : Ok(user);
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
-    {
-        if (!_service.UserExists(id)) return NotFound();
-        await _service.DeleteUserAsync(id);
-        return NoContent();
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+            => await _userService.DeleteAsync(id) ? NoContent() : NotFound();
     }
 }

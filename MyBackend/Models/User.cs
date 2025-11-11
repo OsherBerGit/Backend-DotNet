@@ -16,5 +16,14 @@ public class User
 
     [Required]
     [MaxLength(150)]
+    [EmailAddress]
     public string Email { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(100)]
+    [DataType(DataType.Password)]
+    public string Password { get; set; } = string.Empty;
+    
+    // Many-to-many relationship with Role table
+    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }

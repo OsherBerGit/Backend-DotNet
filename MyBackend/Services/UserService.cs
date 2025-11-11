@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MyBackend.Data;
 using MyBackend.DTOs;
 using MyBackend.Mappers;
 using MyBackend.Models;
@@ -8,47 +10,64 @@ namespace MyBackend.Services;
 
 public class UserService
 {
-    private readonly UserRepository _repository;
+    private readonly AppDbContext _context;
     private readonly UserMapper _mapper;
-    
-    public UserService(UserRepository repository, UserMapper mapper)
+
+    public UserService(AppDbContext context, IMapper mapper)
     {
-        _repository = repository;
+        _context = context;
         _mapper = mapper;
     }
 
-    public async Task<List<UserDto>> GetAllUsersAsync()
+    public async Task<IEnumerable<UserDto>> GetAllAsync()
     {
-        var users = await _repository.GetAllAsync();
-        return _mapper.ToDtoList(users);
+        var users = await _context.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .ToListAsync();
+
+        return _mapper.Map<IEnumerable<UserDto>>(users);
     }
 
-    public async Task<UserDto?> GetUserByIdAsync(int id)
+    public async Task<UserDto?> GetByIdAsync(int id)
     {
-        var user = await _repository.GetByIdAsync(id);
-        return user == null ? null : _mapper.ToDto(user);
+        var user = await _context.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
+        return user == null ? null : _mapper.Map<UserDto>(user);
     }
 
-    public async Task<UserDto> CreateUserAsync(UserDto dto)
+    public async Task<UserDto> CreateAsync(CreateUserDto dto)
     {
-        var user = _mapper.ToEntity(dto);
-        var created = await _repository.AddAsync(user);
-        return _mapper.ToDto(created);
+        var user = _mapper.Map<User>(dto);
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<UserDto>(user);
     }
 
-    public async Task UpdateUserAsync(int id, UserDto dto)
+    public async Task<UserDto?> UpdateAsync(int id, UpdateUserDto dto)
     {
-        var user = _mapper.ToEntity(dto);
-        user.Id = id;
-        await _repository.UpdateAsync(user);
+        var user = await _context.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null) return null;
+
+        _mapper.Map(dto, user);
+
+        await _context.SaveChangesAsync();
+        return _mapper.Map<UserDto>(user);
     }
 
-    public async Task DeleteUserAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        var user = await _repository.GetByIdAsync(id);
-        if (user != null)
-            await _repository.DeleteAsync(user);
-    }
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return false;
 
-    public bool UserExists(int id) => _repository.Exists(id);
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
