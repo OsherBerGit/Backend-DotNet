@@ -7,11 +7,10 @@ namespace MyBackend.Models;
 public class Role
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     
-    [Required]
-    [MaxLength(50)]
+    [Required, MaxLength(50)]
     public string Name { get; set; } = string.Empty;
     
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();

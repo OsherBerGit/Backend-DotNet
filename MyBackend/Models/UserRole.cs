@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyBackend.Models;
 
+// Many-to-many relationship between Users and Roles
 [Table("UserRoles")]
 public class UserRole
 {
