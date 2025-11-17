@@ -11,7 +11,7 @@ public class Role
     public int Id { get; set; }
     
     [Required, MaxLength(50)]
-    public string Name { get; set; } = string.Empty;
+    public string Rolename { get; set; } = string.Empty;
     
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }

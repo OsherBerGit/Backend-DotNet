@@ -1,9 +1,5 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using MyBackend.Data;
-using MyBackend.Repositories;
 using MyBackend.Services;
 using MyBackend.Mappers;
 
@@ -15,11 +11,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<UserMapper>();
-builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProductMapper>();
+builder.Services.AddScoped<ProductService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// builder.Services.AddAuthentication();
+// builder.Services.AddAuthorization(options =>
+// {
+//     options.AddPolicy("AdminOnly", policy =>
+//         policy.RequireRole("Admin"));
+// });
 
 var app = builder.Build();
 

@@ -13,7 +13,7 @@ public class Product
     [MaxLength(100)]
     public string Name { get; set; }
 
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = "Price must be positive")]

@@ -133,3 +133,6 @@ C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\tr\Microsoft.C
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.sourcelink.json
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\DevOne.Security.Cryptography.BCrypt.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\BCrypt.Net-Next.dll

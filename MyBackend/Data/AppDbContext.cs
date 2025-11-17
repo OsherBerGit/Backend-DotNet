@@ -32,8 +32,8 @@ namespace MyBackend.Data
             
             // Seed basic Roles
             modelBuilder.Entity<Role>().HasData(
-                new Role { Id = 1, Name = "Admin" },
-                new Role { Id = 2, Name = "User" }
+                new Role { Id = 1, Rolename = "Admin" },
+                new Role { Id = 2, Rolename = "User" }
             );
         }
     }

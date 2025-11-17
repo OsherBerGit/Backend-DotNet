@@ -2,53 +2,97 @@
 using MyBackend.Data;
 using MyBackend.Models;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Identity;
+using MyBackend.DTOs;
+using MyBackend.DTOs.UserDtos;
+using MyBackend.Mappers;
 
 namespace MyBackend.Services;
 
 public class UserService
 {
     private readonly AppDbContext _context;
+    private readonly UserMapper _mapper;
 
-    public UserService(AppDbContext context) { _context = context; }
-    
-    public async Task<User> CreateUserAsync(string username, string email, string password)
+    public UserService(AppDbContext context, UserMapper mapper)
     {
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+        _context = context;
+        _mapper = mapper;
+    }
+    
+    public async Task<UserDto> CreateUser(CreateUserDto dto)
+    {
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
         var user = new User
         {
-            Username = username,
-            Email = email,
+            Username = dto.Username,
+            Email = dto.Email,
             PasswordHash = hashedPassword
         };
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync(); // unsynchronous save
-        return user;
+
+        return _mapper.ToDto(user);
     }
     
-    public async Task AssignRoleAsync(int userId, int roleId)
+    public async Task<bool> AssignRoleAsync(int userId, int roleId)
     {
-        var exists = await _context.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
-        if (!exists)
-        {
-            _context.UserRoles.Add(new UserRole { UserId = userId, RoleId = roleId });
-            await _context.SaveChangesAsync();
-        }
+        bool exists = await _context.UserRoles
+            .AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
+
+        if (exists)
+            return false;
+
+        _context.UserRoles.Add(new UserRole { UserId = userId, RoleId = roleId });
+        await _context.SaveChangesAsync();
+
+        return true;
     }
     
-    public async Task<List<User>> GetAllUsersAsync()
+    public async Task<List<UserDto>> GetAllUsers()
     {
-        return await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).ToListAsync();
+        var users = await _context.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .ToListAsync();
+
+        return users.Select(_mapper.ToDto).ToList();
     }
     
-    public async Task DeleteUserAsync(int id)
+    public async Task<UserDto?> GetUserById(int id)
+    {
+        var user = await _context.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
+        return user is null ? null : _mapper.ToDto(user);
+    }
+    
+    public async Task<UserDto?> UpdateUser(int id, UpdateUserDto dto)
     {
         var user = await _context.Users.FindAsync(id);
-        if (user != null)
-        {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-        }
+        if (user == null)
+            return null;
+        
+        user.Email = dto.Email ?? user.Email;
+
+        await _context.SaveChangesAsync();
+
+        return _mapper.ToDto(user);
+    }
+    
+    public async Task<bool> DeleteUser(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+            return false;
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 }
