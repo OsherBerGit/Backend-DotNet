@@ -17,11 +17,10 @@ public class AuthService
             .Include(u => u.Roles)
             .FirstOrDefaultAsync(u => u.Username == authenticationRequest.Username);
 
-        if (user == null)
-            return null;
+        if (user == null) return null;
 
         var validPassword = BCrypt.Net.BCrypt.Verify(authenticationRequest.Password, user.Password);
-        
+
         return !validPassword ? null : user;
     }
 }

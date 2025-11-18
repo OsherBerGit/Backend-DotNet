@@ -25,9 +25,9 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username)
         };
-
-        if (user.Roles != null)
-            claims.AddRange(user.Roles.Select(ur => new Claim(ClaimTypes.Role, ur.Rolename)));
+        
+        claims.AddRange(user.Roles
+            .Select(ur => new Claim(ClaimTypes.Role, ur.Rolename)));
 
         var identity = new ClaimsIdentity(
             claims,
