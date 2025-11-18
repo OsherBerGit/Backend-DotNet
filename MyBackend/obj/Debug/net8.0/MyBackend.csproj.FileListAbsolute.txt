@@ -136,3 +136,5 @@ C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\runtimes\brows
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.sourcelink.json
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\DevOne.Security.Cryptography.BCrypt.dll
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.RazorAssemblyInfo.cache
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.RazorAssemblyInfo.cs

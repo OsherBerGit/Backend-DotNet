@@ -22,8 +22,9 @@ public class User
     [Required(ErrorMessage = "Password is required")]
     [MaxLength(100)]
     [DataType(DataType.Password)] // Password field
-    public string PasswordHash { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     
     // Many-to-many relationship with Role table
-    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    // public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>(); // Join Entity
+    public ICollection<Role> Roles { get; set; } = new List<Role>(); // Skip Navigation (Spring Boot style)
 }

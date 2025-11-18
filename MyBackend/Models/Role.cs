@@ -13,5 +13,7 @@ public class Role
     [Required, MaxLength(50)]
     public string Rolename { get; set; } = string.Empty;
     
-    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    // Many-to-many back-reference
+    // public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public ICollection<User> Users { get; set; } = new List<User>();
 }

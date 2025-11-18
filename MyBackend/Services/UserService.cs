@@ -28,7 +28,7 @@ public class UserService
         {
             Username = dto.Username,
             Email = dto.Email,
-            PasswordHash = hashedPassword
+            Password = hashedPassword
         };
 
         _context.Users.Add(user);
@@ -37,25 +37,15 @@ public class UserService
         return _mapper.ToDto(user);
     }
     
-    public async Task<bool> AssignRoleAsync(int userId, int roleId)
-    {
-        bool exists = await _context.UserRoles
-            .AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
-
-        if (exists)
-            return false;
-
-        _context.UserRoles.Add(new UserRole { UserId = userId, RoleId = roleId });
-        await _context.SaveChangesAsync();
-
-        return true;
-    }
-    
     public async Task<List<UserDto>> GetAllUsers()
     {
+        // var users = await _context.Users load roles via eager loading
+        //     .Include(u => u.UserRoles)
+        //     .ThenInclude(ur => ur.Role)
+        //     .ToListAsync();
+        
         var users = await _context.Users
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
+            .Include(u => u.Roles)  // load roles via skip navigation
             .ToListAsync();
 
         return users.Select(_mapper.ToDto).ToList();
@@ -64,8 +54,7 @@ public class UserService
     public async Task<UserDto?> GetUserById(int id)
     {
         var user = await _context.Users
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
+            .Include(u => u.Roles)
             .FirstOrDefaultAsync(u => u.Id == id);
 
         return user is null ? null : _mapper.ToDto(user);

@@ -1,22 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyBackend.DTOs;
 using MyBackend.DTOs.UserDtos;
-using MyBackend.Models;
 using MyBackend.Services;
 
 namespace MyBackend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // any authenticated user
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
     
-    public UserController(UserService userService)
-    {
-        _userService = userService;
-    }
+    public UserController(UserService userService) { _userService = userService; }
     
     [HttpGet("/users")]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
@@ -30,6 +26,7 @@ public class UserController : ControllerBase
         return await _userService.GetUserById(id);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPost("/users")]
     public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto dto)
     {
