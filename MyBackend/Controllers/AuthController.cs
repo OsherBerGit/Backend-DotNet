@@ -27,12 +27,7 @@ public class AuthController : ControllerBase
         };
 
         if (user.Roles != null)
-        {
-            foreach (var role in user.Roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role.Rolename));
-            }
-        }
+            claims.AddRange(user.Roles.Select(ur => new Claim(ClaimTypes.Role, ur.Rolename)));
 
         var identity = new ClaimsIdentity(
             claims,

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Xml;
+using Microsoft.EntityFrameworkCore;
 using MyBackend.Data;
 using MyBackend.DTOs;
 using MyBackend.DTOs.ProductDtos;
@@ -53,13 +54,10 @@ public class ProductService
         if (product == null)
             return null;
 
-        if (dto.Name != null) product.Name = dto.Name;
-
+        product.Name = dto.Name ?? product.Name;
         product.Description = dto.Description;
-
-        if (dto.Price.HasValue) product.Price = dto.Price.Value;
-
-        if (dto.Quantity.HasValue) product.Quantity = dto.Quantity.Value;
+        product.Price = dto.Price ?? product.Price;
+        product.Quantity = dto.Quantity ?? product.Quantity;
 
         _context.SaveChanges();
 
