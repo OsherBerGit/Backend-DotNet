@@ -64,18 +64,6 @@ namespace MyBackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Rolename = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Rolename = "User"
-                        });
                 });
 
             modelBuilder.Entity("MyBackend.Models.User", b =>
