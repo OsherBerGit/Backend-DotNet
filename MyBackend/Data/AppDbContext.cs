@@ -15,6 +15,8 @@ namespace MyBackend.Data
         public DbSet<Purchase> Purchases { get; set; }
         
         public DbSet<PurchaseProduct> PurchaseProducts { get; set; }
+        
+        public DbSet<ProductReview> ProductReviews { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -42,6 +44,23 @@ namespace MyBackend.Data
                     .WithMany() // no need to store the inverse
                     .HasForeignKey(pp => pp.ProductId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                // Configure ProductReview Unique Index and Many-to-Many
+                modelBuilder.Entity<ProductReview>()
+                    .HasIndex(pr => new { pr.ProductId, pr.UserId })
+                    .IsUnique();
+                
+                modelBuilder.Entity<ProductReview>()
+                    .HasOne(pr => pr.Product)
+                    .WithMany()
+                    .HasForeignKey(pr => pr.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                modelBuilder.Entity<ProductReview>()
+                    .HasOne(pr => pr.User)
+                    .WithMany()
+                    .HasForeignKey(pr => pr.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

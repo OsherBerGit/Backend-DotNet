@@ -12,7 +12,7 @@ public class Purchase
     public int UserId { get; set; }
     
     [DataType(DataType.Date)]
-    public DateTime Date { get; set; }
+    public DateTime Date { get; set; } = DateTime.UtcNow;
     
     // Navigation property
     public User User { get; set; }
