@@ -6,20 +6,15 @@ namespace MyBackend.Models;
 // Many-to-many relationship between Purchases and Products
 [Table("PurchaseProducts")]
 public class PurchaseProduct
-{
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-    
-    [ForeignKey(nameof(PurchaseId))]
+{ 
+    // Composite keys
     public int PurchaseId { get; set; }
-    
-    [ForeignKey(nameof(ProductId))]
     public int ProductId { get; set; }
     
-    [Column, Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be positive")]
     public int Quantity { get; set; }
     
+    // Navigation properties
     public Purchase Purchase { get; set; }
     public Product Product { get; set; }
 }

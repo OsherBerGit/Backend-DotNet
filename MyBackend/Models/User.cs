@@ -21,7 +21,7 @@ public class User
     
     [Required(ErrorMessage = "Password is required")]
     [MaxLength(100)]
-    [DataType(DataType.Password)] // Password field
+    // [DataType(DataType.Password)] // Password field
     public string Password { get; set; } = string.Empty;
     
     // Many-to-many relationship with Role table

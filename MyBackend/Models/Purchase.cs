@@ -6,14 +6,15 @@ namespace MyBackend.Models;
 [Table("Purchase")]
 public class Purchase
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     
     public int UserId { get; set; }
     
+    [DataType(DataType.Date)]
     public DateTime Date { get; set; }
     
+    // Navigation property
     public User User { get; set; }
     
     // Many-to-many relationship with Product table

@@ -27,23 +27,21 @@ namespace MyBackend.Data
                     .HasIndex(p => new { p.UserId, p.Date })
                     .IsUnique();
                 
-                modelBuilder.Entity<PurchaseProduct>()
-                    .HasIndex(pi => new { pi.PurchaseId, pi.ProductId })
-                    .IsUnique();
-                
                 // Configure PurchaseProduct Many-to-Many
                 modelBuilder.Entity<PurchaseProduct>()
-                    .HasKey(pi => new { pi.PurchaseId, pi.ProductId });
+                    .HasKey(pp => new { pp.PurchaseId, pp.ProductId });
                 
                 modelBuilder.Entity<PurchaseProduct>()
-                    .HasOne(pi => pi.Purchase)
+                    .HasOne(pp => pp.Purchase)
                     .WithMany(p => p.PurchaseProducts)
-                    .HasForeignKey(pi => pi.PurchaseId);
+                    .HasForeignKey(pp => pp.PurchaseId)
+                    .OnDelete(DeleteBehavior.Cascade);
                 
                 modelBuilder.Entity<PurchaseProduct>()
                     .HasOne(pp => pp.Product)
-                    .WithMany()
-                    .HasForeignKey(pp => pp.ProductId);
+                    .WithMany() // no need to store the inverse
+                    .HasForeignKey(pp => pp.ProductId)
+                    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
