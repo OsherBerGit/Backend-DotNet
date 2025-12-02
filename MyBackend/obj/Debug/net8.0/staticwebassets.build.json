@@ -1,11 +1,39 @@
 {
   "Version": 1,
-  "Hash": "yGWF85H8n6Bv9UWuysLGRbGVx6DHX0ZXy+bXnaR0OVg=",
+  "Hash": "kCzng43/4MauRCz77GuMBnkITM8R6hmDU/+qEIARYN8=",
   "Source": "MyBackend",
   "BasePath": "_content/MyBackend",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "MyBackend\\wwwroot",
+      "Source": "MyBackend",
+      "ContentRoot": "C:\\Users\\Osher\\RiderProjects\\MyBackend\\MyBackend\\wwwroot\\",
+      "BasePath": "_content/MyBackend",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\Osher\\RiderProjects\\MyBackend\\MyBackend\\wwwroot\\css\\site.css",
+      "SourceId": "MyBackend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Osher\\RiderProjects\\MyBackend\\MyBackend\\wwwroot\\",
+      "BasePath": "_content/MyBackend",
+      "RelativePath": "css/site.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\site.css"
+    }
+  ]
 }

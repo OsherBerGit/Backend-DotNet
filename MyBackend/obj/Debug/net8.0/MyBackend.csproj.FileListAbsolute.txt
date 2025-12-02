@@ -138,3 +138,4 @@ C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\DevOne.Securit
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\BCrypt.Net-Next.dll
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.RazorAssemblyInfo.cache
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.RazorAssemblyInfo.cs
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\MyBackend.staticwebassets.runtime.json
