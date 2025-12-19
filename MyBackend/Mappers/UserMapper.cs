@@ -3,7 +3,7 @@ using MyBackend.Models;
 
 namespace MyBackend.Mappers;
 
-public class UserMapper
+public class UserMapper : IUserMapper
 {
     public UserDto ToDto(User user)
     { 
@@ -18,13 +18,13 @@ public class UserMapper
         };
     }
 
-    public User ToEntity(UserDto dto)
+    public User ToEntity(CreateUserDto dto, string hashedPassword)
     {
         return new User
         {
-            Id = dto.Id,
             Username = dto.Username,
-            Email = dto.Email
+            Email = dto.Email,
+            PasswordHash = hashedPassword
         };
     }
 }

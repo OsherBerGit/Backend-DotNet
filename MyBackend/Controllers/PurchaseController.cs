@@ -7,57 +7,36 @@ namespace MyBackend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PurchaseController : ControllerBase
+public class PurchaseController(IPurchaseService purchaseService) : ControllerBase
 {
-    private readonly PurchaseService _purchaseService;
-
-    public PurchaseController(PurchaseService purchaseService)
-    {
-        _purchaseService = purchaseService;
-    }
-
     [HttpPost]
-    public async Task<IActionResult> CreatePurchase([FromBody] CreatePurchaseDto dto)
+    public async Task<ActionResult<PurchaseDto>> CreatePurchase([FromBody] CreatePurchaseDto dto)
     {
-        var purchase = await _purchaseService.CreatePurchase(dto);
-        if (purchase == null)
-            return BadRequest("Invalid purchase data. Check user exists and products have sufficient quantity.");
-
-        return CreatedAtAction(nameof(GetPurchaseById), new { id = purchase.Id }, purchase);
+        throw new NotImplementedException();
     }
 
     [HttpGet]
     public async Task<ActionResult<List<PurchaseDto>>> GetAllPurchases()
     {
-        var purchases = await _purchaseService.GetAllPurchases();
-        return Ok(purchases);
+        throw new NotImplementedException();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<PurchaseDto>> GetPurchaseById(int id)
     {
-        var purchase = await _purchaseService.GetPurchaseById(id);
-        if (purchase == null)
-            return NotFound($"Purchase with ID {id} not found.");
-
-        return Ok(purchase);
+        throw new NotImplementedException();
     }
 
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<List<PurchaseDto>>> GetPurchasesByUserId(int userId)
     {
-        var purchases = await _purchaseService.GetPurchasesByUserId(userId);
-        return Ok(purchases);
+        throw new NotImplementedException();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePurchase(int id)
     {
-        var result = await _purchaseService.DeletePurchase(id);
-        if (!result)
-            return NotFound($"Purchase with ID {id} not found.");
-
-        return NoContent();
+        throw new NotImplementedException();
     }
 }
 

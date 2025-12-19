@@ -1,77 +1,76 @@
-﻿using System.Xml;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MyBackend.Data;
 using MyBackend.DTOs;
 using MyBackend.DTOs.ProductDtos;
 using MyBackend.Mappers;
-using MyBackend.Models;
 
 namespace MyBackend.Services;
 
-public class ProductService
+public class ProductService(AppDbContext context, IProductMapper mapper) : IProductService
 {
-    private readonly AppDbContext _context;
-    private readonly ProductMapper _mapper;
+    public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
+    {
+        var product = mapper.ToEntity(dto);
 
-    public ProductService(AppDbContext context, ProductMapper mapper)
-    {
-        _context = context;
-        _mapper = mapper;
-    }
-    
-    public ProductDto CreateProduct(CreateProductDto dto)
-    {
-        var product = new Product
-        {
-            Name = dto.Name,
-            Description = dto.Description,
-            Price = dto.Price,
-            Quantity = dto.Quantity
-        };
+        context.Products.Add(product);
+        await context.SaveChangesAsync();
 
-        _context.Products.Add(product);
-        _context.SaveChanges();
-
-        return _mapper.ToDto(product);
+        return mapper.ToDto(product);
     }
     
-    public List<ProductDto> GetAllProducts()
+    public async Task<List<ProductDto>> GetAllProductsAsync()
     {
-        return _context.Products
-            .Select(_mapper.ToDto)
-            .ToList();
+        var products = await context.Products
+            .AsNoTracking()
+            .ToListAsync();
+        
+        return products.Select(mapper.ToDto).ToList();
     }
     
-    public ProductDto? GetProductById(int id)
+    public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
-        var product = _context.Products.Find(id);
-        return product is null ? null : _mapper.ToDto(product);
+        var product = await context.Products.FindAsync(id);
+        return product is null ? null : mapper.ToDto(product);
     }
     
-    public ProductDto? UpdateProduct(int id, UpdateProductDto dto)
+    public async Task<ProductDto?> UpdateProductAsync(int id, UpdateProductDto dto)
     {
-        var product = _context.Products.Find(id);
+        var product = await context.Products.FindAsync(id);
         if (product == null)
             return null;
+        
+        mapper.UpdateEntity(dto, product);
 
-        product.Name = dto.Name ?? product.Name;
-        product.Description = dto.Description;
-        product.Price = dto.Price ?? product.Price;
-        product.Quantity = dto.Quantity ?? product.Quantity;
+        await context.SaveChangesAsync();
 
-        _context.SaveChanges();
-
-        return _mapper.ToDto(product);
+        return mapper.ToDto(product);
     }
 
-    public bool DeleteProduct(int id)
+    public async Task<bool> DeleteProductAsync(int id)
     {
-        var product = _context.Products.Find(id);
-        if (product == null) return false;
+        var product = await context.Products.FindAsync(id);
+        if (product == null)
+            return false;
         
-        _context.Products.Remove(product);
-        _context.SaveChanges();
+        context.Products.Remove(product);
+        await context.SaveChangesAsync();
         
         return true;
+    }
+
+    public async Task<ProductDto?> UpdateProductQuantityAsync(int id, int delta)
+    {
+        var product = await context.Products.FindAsync(id);
+        if (product == null)
+            return null;
+        
+        if (product.Quantity + delta < 0)
+            throw new InvalidOperationException("Quantity cannot be negative!");
+        
+        product.Quantity += delta; 
+
+        await context.SaveChangesAsync();
+        
+        return mapper.ToDto(product);
     }
 }

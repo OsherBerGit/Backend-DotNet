@@ -3,7 +3,7 @@ using MyBackend.Models;
 
 namespace MyBackend.Mappers;
 
-public class PurchaseMapper
+public class PurchaseMapper : IPurchaseMapper
 {
     public PurchaseDto ToDto(Purchase purchase)
     {

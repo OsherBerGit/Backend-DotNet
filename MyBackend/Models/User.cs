@@ -20,9 +20,7 @@ public class User
     public string Email { get; set; } = string.Empty;
     
     [Required(ErrorMessage = "Password is required")]
-    [MaxLength(100)]
-    // [DataType(DataType.Password)] // Password field
-    public string Password { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
     
     // Many-to-many relationship with Role table
     // public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>(); // Join Entity

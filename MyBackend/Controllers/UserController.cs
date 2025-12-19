@@ -6,42 +6,46 @@ using MyBackend.Services;
 namespace MyBackend.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")]
 [Authorize] // any authenticated user
-public class UserController : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
-    private readonly UserService _userService;
-    
-    public UserController(UserService userService) { _userService = userService; }
-    
-    [HttpGet("/users")]
+    [HttpGet]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
-        return await _userService.GetAllUsers();
+        var users = await userService.GetAllUsersAsync();
+        return Ok(users); // 200
     }
     
-    [HttpGet("/users/{id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<UserDto?>> GetUserById(int id)
     {
-        return await _userService.GetUserById(id);
+        var user = await userService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound(); // 404
+        return Ok(user); // 200
     }
     
     [Authorize(Roles = "Admin")]
-    [HttpPost("/users")]
+    [HttpPost]
     public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto dto)
     {
-        return await _userService.CreateUser(dto);
+        var newUser = await userService.CreateUserAsync(dto);
+        return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser); // 201
     }
     
-    [HttpPut("/users/{id}")]
+    [HttpPut("{id}")]
     public async Task<ActionResult<UserDto?>> UpdateUser(int id, UpdateUserDto dto)
     {
-        return await _userService.UpdateUser(id, dto);
+        var updatedUser = await userService.UpdateUserAsync(id, dto);
+        if (updatedUser == null)
+            return NotFound(); // 404
+        return Ok(updatedUser); // 200
     }
     
-    [HttpDelete("/users/{id}")]
-    public async Task<ActionResult<bool>> DeleteUser(int id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
     {
-        return await _userService.DeleteUser(id);
+        return await userService.DeleteUserAsync(id) ? NoContent() : NotFound(); // 204 or 404
     }
 }

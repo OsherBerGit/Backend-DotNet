@@ -1,26 +1,39 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyBackend.Data;
 using MyBackend.DTOs;
+using MyBackend.DTOs.UserDtos;
 using MyBackend.Models;
 
 namespace MyBackend.Services;
 
-public class AuthService
+public class AuthService(AppDbContext context) : IAuthService
 {
-    private readonly AppDbContext _context;
-    
-    public AuthService(AppDbContext context) { _context = context; }
-
     public async Task<User?> ValidateUserAsync(AuthenticationRequest authenticationRequest)
     {
-        var user = await _context.Users
+        var user = await context.Users
             .Include(u => u.Roles)
             .FirstOrDefaultAsync(u => u.Username == authenticationRequest.Username);
 
         if (user == null) return null;
 
-        var validPassword = BCrypt.Net.BCrypt.Verify(authenticationRequest.Password, user.Password);
+        var validPassword = BCrypt.Net.BCrypt.Verify(authenticationRequest.Password, user.PasswordHash);
 
         return !validPassword ? null : user;
+    }
+
+    public Task<User?> RegisterUserAsync(AuthenticationRequest request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<string?> LoginUserAsync(AuthenticationRequest request)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+        
+        if (user == null) return null;
+        
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) return null;
+        
+        throw new NotImplementedException();
     }
 }

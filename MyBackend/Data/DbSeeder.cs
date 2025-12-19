@@ -20,7 +20,7 @@ public static class DbSeeder
         var adminUser = new User
         {
             Username = "admin",
-            Password = BCrypt.Net.BCrypt.HashPassword("admin"),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"),
             Roles = new List<Role> { adminRole, userRole }
         };
         context.Users.Add(adminUser);
@@ -29,7 +29,7 @@ public static class DbSeeder
         var regularUser = new User
         {
             Username = "user",
-            Password = BCrypt.Net.BCrypt.HashPassword("user"),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("user"),
             Roles = new List<Role> { userRole }
         };
         context.Users.Add(regularUser);

@@ -1,6 +1,6 @@
 ﻿namespace MyBackend.DTOs.UserDtos;
 
-public class CreateUserDto
+public class CreateUserDto // RegisterUserDto
 {
     public string Username { get; set; } = null!;
     public string Email { get; set; } = null!;
