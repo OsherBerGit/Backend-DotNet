@@ -6,7 +6,7 @@ namespace MyBackend.Mappers;
 
 public interface IProductMapper
 {
-    ProductDto ToDto(Product product);
+    ProductDto? ToDto(Product? product);
     Product ToEntity(CreateProductDto dto);
     void UpdateEntity(UpdateProductDto dto, Product entity);
 }

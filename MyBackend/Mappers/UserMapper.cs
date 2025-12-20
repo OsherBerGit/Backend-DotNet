@@ -5,8 +5,10 @@ namespace MyBackend.Mappers;
 
 public class UserMapper : IUserMapper
 {
-    public UserDto ToDto(User user)
+    public UserDto? ToDto(User? user)
     { 
+        if (user is null) return null;
+        
         return new UserDto
         {
             Id = user.Id,
@@ -20,6 +22,9 @@ public class UserMapper : IUserMapper
 
     public User ToEntity(CreateUserDto dto, string hashedPassword)
     {
+        if (dto is null)
+            throw new ArgumentNullException(nameof(dto), "Cannot convert null DTO to User entity");
+        
         return new User
         {
             Username = dto.Username,

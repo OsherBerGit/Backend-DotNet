@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyBackend.DTOs.PurchaseDtos;
 using MyBackend.Services;
 
 namespace MyBackend.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/purchases")]
 public class PurchaseController(IPurchaseService purchaseService) : ControllerBase
 {
     [HttpPost]
@@ -27,7 +26,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         throw new NotImplementedException();
     }
 
-    [HttpGet("user/{userId}")]
+    [HttpGet("/user/{userId}")]
     public async Task<ActionResult<List<PurchaseDto>>> GetPurchasesByUserId(int userId)
     {
         throw new NotImplementedException();

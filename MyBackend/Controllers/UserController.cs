@@ -21,13 +21,13 @@ public class UserController(IUserService userService) : ControllerBase
     public async Task<ActionResult<UserDto?>> GetUserById(int id)
     {
         var user = await userService.GetUserByIdAsync(id);
-        if (user == null)
+        if (user is null)
             return NotFound(); // 404
         return Ok(user); // 200
     }
-    
-    [Authorize(Roles = "Admin")]
+
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto dto)
     {
         var newUser = await userService.CreateUserAsync(dto);
@@ -38,7 +38,7 @@ public class UserController(IUserService userService) : ControllerBase
     public async Task<ActionResult<UserDto?>> UpdateUser(int id, UpdateUserDto dto)
     {
         var updatedUser = await userService.UpdateUserAsync(id, dto);
-        if (updatedUser == null)
+        if (updatedUser is null)
             return NotFound(); // 404
         return Ok(updatedUser); // 200
     }

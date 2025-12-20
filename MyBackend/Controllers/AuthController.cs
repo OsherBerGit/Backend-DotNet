@@ -10,19 +10,28 @@ using MyBackend.Services;
 
 namespace MyBackend.Controllers;
 
+[ApiController]
 public class AuthController(IAuthService authService) : ControllerBase
 {
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(CreateUserDto request)
+    {
+        var user = await authService.RegisterUserAsync(request);
+        
+        if (user is null)
+            return BadRequest("Username is already taken");
+        
+        return Ok(new { message = "User registered successfully", userId = user.Id });
+    }
+    
     [HttpPost("login")]
     public async Task<IActionResult> Login(AuthenticationRequest authenticationRequest)
     {
-        try
-        {
-            var token = await authService.LoginUserAsync(authenticationRequest);
-            return Ok("Logged in");
-        }
-        catch (Exception e)
-        {
+        var token = await authService.LoginUserAsync(authenticationRequest);
+        
+        if (token is null)
             return Unauthorized("Invalid username or password");
-        }
+        
+        return Ok(new {token});
     }
 }

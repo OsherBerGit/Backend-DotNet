@@ -139,3 +139,11 @@ C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\BCrypt.Net-Nex
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.RazorAssemblyInfo.cache
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\obj\Debug\net8.0\MyBackend.RazorAssemblyInfo.cs
 C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\MyBackend.staticwebassets.runtime.json
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Osher\RiderProjects\MyBackend\MyBackend\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

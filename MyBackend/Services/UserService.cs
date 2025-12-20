@@ -20,13 +20,13 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
         var user = mapper.ToEntity(dto, hashedPassword);
 
         var defaultRole = await context.Roles.FirstOrDefaultAsync(r => r.Rolename == "User");
-        if (defaultRole != null)
+        if (defaultRole is not null)
             user.Roles = new List<Role> { defaultRole };
         
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        return mapper.ToDto(user);
+        return mapper.ToDto(user)!;
     }
     
     public async Task<List<UserDto>> GetAllUsersAsync()
@@ -42,7 +42,7 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
             .Include(u => u.Roles)  // load roles via skip navigation
             .ToListAsync();
 
-        return users.Select(mapper.ToDto).ToList();
+        return users.Select(u => mapper.ToDto(u)!).ToList();
     }
     
     public async Task<UserDto?> GetUserByIdAsync(int id)
@@ -52,7 +52,7 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
             .Include(u => u.Roles)
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return user is null ? null : mapper.ToDto(user);
+        return mapper.ToDto(user);
     }
     
     public async Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto dto)
@@ -61,7 +61,7 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
             .Include(u => u.Roles)
             .FirstOrDefaultAsync(u => u.Id == id);
         
-        if (user == null)
+        if (user is null)
             return null;
         
         user.Email = dto.Email ?? user.Email;
@@ -74,7 +74,7 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
     public async Task<bool> DeleteUserAsync(int id)
     {
         var user = await context.Users.FindAsync(id);
-        if (user == null)
+        if (user is null)
             return false;
 
         context.Users.Remove(user);

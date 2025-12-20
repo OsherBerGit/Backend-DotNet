@@ -6,8 +6,10 @@ namespace MyBackend.Mappers;
 
 public class ProductMapper : IProductMapper
 {
-    public ProductDto ToDto(Product product)
+    public ProductDto? ToDto(Product? product)
     {
+        if (product is null) return null;
+        
         return new ProductDto
         {
             Id = product.Id,
