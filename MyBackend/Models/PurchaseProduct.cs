@@ -15,6 +15,8 @@ public class PurchaseProduct
     public int Quantity { get; set; }
     
     // Navigation properties
+    [ForeignKey(nameof(PurchaseId))]
     public Purchase Purchase { get; set; }
+    [ForeignKey(nameof(ProductId))]
     public Product Product { get; set; }
 }

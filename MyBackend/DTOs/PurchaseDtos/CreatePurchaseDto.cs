@@ -1,7 +1,10 @@
-﻿namespace MyBackend.DTOs.PurchaseDtos;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MyBackend.DTOs.PurchaseDtos;
 
 public class CreatePurchaseDto
 {
-    public int UserId { get; set; }
+    [Required]
+    [MinLength(1, ErrorMessage = "Cart cannot be empty")]
     public List<CreatePurchaseItemDto> Items { get; set; } = new();
 }

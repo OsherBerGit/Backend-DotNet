@@ -16,7 +16,7 @@ public class ProductService(AppDbContext context, IProductMapper mapper) : IProd
             throw new ProductAlreadyExistsException("Product with this name already exists.");
         
         var product = mapper.ToEntity(dto);
-
+        
         context.Products.Add(product);
         await context.SaveChangesAsync();
 
