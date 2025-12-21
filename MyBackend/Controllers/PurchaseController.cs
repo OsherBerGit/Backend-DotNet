@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyBackend.DTOs.PurchaseDtos;
 using MyBackend.Services;
 
@@ -8,13 +9,7 @@ namespace MyBackend.Controllers;
 [Route("api/purchases")]
 public class PurchaseController(IPurchaseService purchaseService) : ControllerBase
 {
-    [HttpPost]
-    public async Task<ActionResult<PurchaseDto>> CreatePurchase([FromBody] CreatePurchaseDto dto)
-    {
-        throw new NotImplementedException();
-    }
-
-    [HttpGet]
+    [NonAction] // change to HttpGet
     public async Task<ActionResult<List<PurchaseDto>>> GetAllPurchases()
     {
         throw new NotImplementedException();
@@ -23,16 +18,56 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     [HttpGet("{id}")]
     public async Task<ActionResult<PurchaseDto>> GetPurchaseById(int id)
     {
-        throw new NotImplementedException();
+        var purchase = await purchaseService.GetPurchaseByIdAsync(id);
+        if (purchase is null)
+            return NotFound();
+        return Ok(purchase);
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult<PurchaseDto>> CreatePurchase([FromBody] CreatePurchaseDto dto)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+                return Unauthorized("User ID not found in token");
+
+            int userId = int.Parse(userIdClaim.Value);
+            var newPurchase = await purchaseService.CreatePurchaseAsync(userId, dto);
+            if (newPurchase is null)
+                return BadRequest("Failed to create purchase");
+            
+            return CreatedAtAction(nameof(GetPurchaseById), new { id = newPurchase.Id }, newPurchase);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpGet("/user/{userId}")]
+    [Authorize(Roles = "Admin")]
+    [HttpGet("user/{userId}")]
     public async Task<ActionResult<List<PurchaseDto>>> GetPurchasesByUserId(int userId)
     {
-        throw new NotImplementedException();
+        var purchases = await purchaseService.GetPurchasesByUserId(userId);
+        return Ok(purchases);
+    }
+    
+    [HttpGet("my-purchases")]
+    public async Task<ActionResult<List<PurchaseDto>>> GetMyPurchases()
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim is null)
+            return Unauthorized("User ID not found in token");
+
+        int userId = int.Parse(userIdClaim.Value);
+        var purchases = await purchaseService.GetPurchasesByUserId(userId);
+        return Ok(purchases);
     }
 
-    [HttpDelete("{id}")]
+    [NonAction]
+    // [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePurchase(int id)
     {
         throw new NotImplementedException();

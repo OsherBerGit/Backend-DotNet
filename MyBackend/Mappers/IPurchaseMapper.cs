@@ -5,5 +5,6 @@ namespace MyBackend.Mappers;
 
 public interface IPurchaseMapper
 {
-    PurchaseDto ToDto(Purchase purchase);
+    PurchaseDto? ToDto(Purchase? purchase);
+    Purchase ToEntity(CreatePurchaseDto dto);
 }

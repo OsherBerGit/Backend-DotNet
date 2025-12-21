@@ -5,8 +5,10 @@ namespace MyBackend.Mappers;
 
 public class PurchaseMapper : IPurchaseMapper
 {
-    public PurchaseDto ToDto(Purchase purchase)
+    public PurchaseDto? ToDto(Purchase? purchase)
     {
+        if (purchase is null) return null;
+        
         var items = purchase.PurchaseProducts.Select(pp => new PurchaseItemDto
         {
             ProductId = pp.ProductId,
@@ -23,6 +25,19 @@ public class PurchaseMapper : IPurchaseMapper
             Date = purchase.Date,
             Items = items,
             Total = items.Sum(i => i.Subtotal)
+        };
+    }
+
+    public Purchase ToEntity(CreatePurchaseDto dto)
+    {
+        return new Purchase
+        {
+            Date = DateTime.UtcNow,
+            PurchaseProducts = dto.Items.Select(item => new PurchaseProduct
+            {
+                ProductId = item.ProductId,
+                Quantity = item.Quantity
+            }).ToList()
         };
     }
 }
