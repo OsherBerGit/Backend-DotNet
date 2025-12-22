@@ -13,6 +13,7 @@ public class ProductReview
     [Range(1,5)]
     public int Rating { get; set; }
 
+    [MaxLength(500)]
     public string? Comment { get; set; }
 
     // Foreign key for Product
@@ -28,4 +29,6 @@ public class ProductReview
     public User User { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
+    public DateTime? UpdatedAt { get; set; }
 }

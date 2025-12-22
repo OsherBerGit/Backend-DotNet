@@ -22,4 +22,6 @@ public class Product
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "Quantity must be positive")]
     public int Quantity { get; set; }
+    
+    public ICollection<ProductReview> Reviews { get; set; } = new List<ProductReview>();
 }

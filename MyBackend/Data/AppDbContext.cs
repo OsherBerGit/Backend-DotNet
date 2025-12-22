@@ -53,7 +53,7 @@ namespace MyBackend.Data
                 
                 modelBuilder.Entity<ProductReview>()
                     .HasOne(pr => pr.Product)
-                    .WithMany()
+                    .WithMany(p => p.Reviews)
                     .HasForeignKey(pr => pr.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);
                 
