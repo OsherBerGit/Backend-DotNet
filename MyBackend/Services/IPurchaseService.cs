@@ -8,5 +8,5 @@ public interface IPurchaseService
     Task<List<PurchaseDto>> GetAllPurchasesAsync();
     Task<PurchaseDto?> GetPurchaseByIdAsync(int id);
     Task<bool> DeletePurchaseAsync(int id);
-    Task<List<PurchaseDto>> GetPurchasesByUserId(int userId);
+    Task<List<PurchaseDto>> GetPurchasesByUserIdAsync(int userId);
 }

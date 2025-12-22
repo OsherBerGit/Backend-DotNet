@@ -50,7 +50,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<List<PurchaseDto>>> GetPurchasesByUserId(int userId)
     {
-        var purchases = await purchaseService.GetPurchasesByUserId(userId);
+        var purchases = await purchaseService.GetPurchasesByUserIdAsync(userId);
         return Ok(purchases);
     }
     
@@ -62,7 +62,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
             return Unauthorized("User ID not found in token");
 
         int userId = int.Parse(userIdClaim.Value);
-        var purchases = await purchaseService.GetPurchasesByUserId(userId);
+        var purchases = await purchaseService.GetPurchasesByUserIdAsync(userId);
         return Ok(purchases);
     }
 

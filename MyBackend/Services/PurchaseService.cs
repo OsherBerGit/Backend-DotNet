@@ -52,7 +52,7 @@ public class PurchaseService(AppDbContext context, IPurchaseMapper mapper) : IPu
         return mapper.ToDto(purchase);
     }
 
-    public async Task<List<PurchaseDto>> GetPurchasesByUserId(int userId)
+    public async Task<List<PurchaseDto>> GetPurchasesByUserIdAsync(int userId)
     {
         var purchases = await context.Purchases
             .AsNoTracking()

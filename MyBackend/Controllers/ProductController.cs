@@ -46,9 +46,9 @@ public class ProductController(IProductService productService) : ControllerBase
     
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<bool>> DeleteProduct(int id)
+    public async Task<IActionResult> DeleteProduct(int id)
     {
-        return await productService.DeleteProductAsync(id);
+        return await productService.DeleteProductAsync(id) ? NoContent() : NotFound();
     }
     
     [HttpPatch("{id}/quantity/{delta}")]
