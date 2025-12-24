@@ -5,4 +5,5 @@ namespace MyBackend.Services;
 public interface ITokenService
 {
     string CreateToken(User user);
+    public RefreshToken GenerateRefreshToken(User user);
 }

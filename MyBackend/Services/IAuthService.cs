@@ -7,5 +7,7 @@ namespace MyBackend.Services;
 public interface IAuthService
 {
     Task<User?> RegisterUserAsync(CreateUserDto request);
-    Task<string?> LoginUserAsync(AuthenticationRequest request);
+    Task<AuthenticationResponse?> LoginUserAsync(AuthenticationRequest request);
+    Task<AuthenticationResponse?> RefreshTokenAsync(string token);
+    Task<bool> RevokeTokenAsync(string token);
 }

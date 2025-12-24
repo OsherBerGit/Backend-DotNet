@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using MyBackend.Models;
@@ -32,5 +33,23 @@ public class TokenService(IConfiguration configuration) : ITokenService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+    
+    public RefreshToken GenerateRefreshToken(User user)
+    {
+        var randomBytes = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+        }
+
+        return new RefreshToken
+        {
+            Token = Convert.ToBase64String(randomBytes),
+            Expires = DateTime.UtcNow.AddDays(7),
+            Created = DateTime.UtcNow,
+            UserId = user.Id,
+            User = user
+        };
     }
 }

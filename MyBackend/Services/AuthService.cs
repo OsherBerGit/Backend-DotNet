@@ -26,10 +26,9 @@ public class AuthService(AppDbContext context, ITokenService tokenService) : IAu
         return user;
     }
 
-    public async Task<string?> LoginUserAsync(AuthenticationRequest request)
+    public async Task<AuthenticationResponse?> LoginUserAsync(AuthenticationRequest request)
     {
         var user = await context.Users
-            .AsNoTracking()
             .Include(u => u.Roles)
             .FirstOrDefaultAsync(u => u.Username == request.Username);
         
@@ -37,6 +36,64 @@ public class AuthService(AppDbContext context, ITokenService tokenService) : IAu
         
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) return null;
         
-        return tokenService.CreateToken(user);
+        var accessToken = tokenService.CreateToken(user);
+        var refreshToken = tokenService.GenerateRefreshToken(user);
+        
+        user.RefreshTokens.Add(refreshToken); 
+        await context.SaveChangesAsync();
+        
+        return new AuthenticationResponse()
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken.Token
+        };
+    }
+
+    public async Task<AuthenticationResponse?> RefreshTokenAsync(string token)
+    {
+        var user = await context.Users
+            .Include(u => u.RefreshTokens) // Load the refresh tokens
+            .Include(u => u.Roles)         // Load the roles for the new AccessToken
+            .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+        if (user is null) return null;
+        
+        var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+        
+        if (!refreshToken.IsActive) return null;
+        
+        refreshToken.Revoked = DateTime.UtcNow;
+        
+        var newAccessToken = tokenService.CreateToken(user);
+        var newRefreshToken = tokenService.GenerateRefreshToken(user);
+
+        user.RefreshTokens.Add(newRefreshToken);
+    
+        await context.SaveChangesAsync();
+
+        return new AuthenticationResponse
+        {
+            AccessToken = newAccessToken,
+            RefreshToken = newRefreshToken.Token
+        };
+    }
+
+    public async Task<bool> RevokeTokenAsync(string token)
+    {
+        var user = await context.Users
+            .Include(u => u.RefreshTokens)
+            .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+        
+        if (user is null) return false;
+        
+        var refreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == token);
+        
+        if (refreshToken is null || !refreshToken.IsActive) return false;
+        
+        refreshToken.Revoked = DateTime.UtcNow;
+        
+        await context.SaveChangesAsync();
+        
+        return true;
     }
 }

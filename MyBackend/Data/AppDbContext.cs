@@ -18,6 +18,10 @@ namespace MyBackend.Data
         public DbSet<PurchaseProduct> PurchaseProducts { get; set; }
         
         public DbSet<ProductReview> ProductReviews { get; set; }
+        
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        
+        public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -61,6 +65,13 @@ namespace MyBackend.Data
                     .HasOne(pr => pr.User)
                     .WithMany()
                     .HasForeignKey(pr => pr.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+        
+                // Configure RefreshToken Many-to-One
+                modelBuilder.Entity<User>()
+                    .HasMany(u => u.RefreshTokens)
+                    .WithOne(rt => rt.User)
+                    .HasForeignKey(rt => rt.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
         }
     }

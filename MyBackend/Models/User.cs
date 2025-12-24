@@ -25,4 +25,6 @@ public class User
     // Many-to-many relationship with Role table
     // public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>(); // Join Entity
     public ICollection<Role> Roles { get; set; } = new List<Role>(); // Skip Navigation (Spring Boot style)
+    
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

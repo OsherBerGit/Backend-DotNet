@@ -1,11 +1,7 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyBackend.DTOs;
 using MyBackend.DTOs.UserDtos;
-using MyBackend.Models;
 using MyBackend.Services;
 
 namespace MyBackend.Controllers;
@@ -25,13 +21,36 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login(AuthenticationRequest authenticationRequest)
+    public async Task<ActionResult<AuthenticationResponse>> Login(AuthenticationRequest authenticationRequest)
     {
-        var token = await authService.LoginUserAsync(authenticationRequest);
+        var result = await authService.LoginUserAsync(authenticationRequest);
         
-        if (token is null)
+        if (result is null)
             return Unauthorized("Invalid username or password");
         
-        return Ok(new {token});
+        return Ok(result);
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<AuthenticationResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
+    {
+        var result = await authService.RefreshTokenAsync(request.Token);
+        
+        if (result is null)
+            return Unauthorized("Invalid refresh token");
+        
+        return Ok(result);
+    }
+    
+    [Authorize]
+    [HttpPost("revoke")]
+    public async Task<IActionResult> Revoke([FromBody] RefreshTokenRequest request)
+    {
+        var success = await authService.RevokeTokenAsync(request.Token);
+    
+        if (!success)
+            return BadRequest("Token is invalid or already revoked");
+
+        return NoContent();
     }
 }
