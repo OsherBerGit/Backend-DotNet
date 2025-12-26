@@ -10,10 +10,7 @@ namespace MyBackend.Controllers;
 public class ReviewController(IReviewService reviewService) : ControllerBase
 {
     [NonAction]
-    public async Task<ActionResult<List<ReviewDto>>> GetAllReviews()
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<ActionResult<List<ReviewDto>>> GetAllReviews() { throw new NotImplementedException(); }
     
     [HttpGet("{id}")]
     public async Task<ActionResult<ReviewDto>> GetReviewById(int id)

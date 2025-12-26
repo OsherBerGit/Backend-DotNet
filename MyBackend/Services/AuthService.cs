@@ -2,6 +2,7 @@
 using MyBackend.Data;
 using MyBackend.DTOs;
 using MyBackend.DTOs.UserDtos;
+using MyBackend.Exceptions;
 using MyBackend.Models;
 
 namespace MyBackend.Services;
@@ -11,7 +12,7 @@ public class AuthService(AppDbContext context, ITokenService tokenService) : IAu
     public async Task<User?> RegisterUserAsync(CreateUserDto request)
     {
         if (await context.Users.AnyAsync(u => u.Username == request.Username))
-            return null;
+            throw new UserAlreadyExistsException("Username is already taken");
         
         var user = new User
         {
@@ -56,7 +57,8 @@ public class AuthService(AppDbContext context, ITokenService tokenService) : IAu
             .Include(u => u.Roles)         // Load the roles for the new AccessToken
             .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
 
-        if (user is null) return null;
+        if (user is null)
+            throw new UnauthorizedAccessException("Invalid token");
         
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
         
@@ -84,7 +86,8 @@ public class AuthService(AppDbContext context, ITokenService tokenService) : IAu
             .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
         
-        if (user is null) return false;
+        if (user is null)
+            throw new UnauthorizedAccessException("Invalid token");
         
         var refreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == token);
         

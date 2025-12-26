@@ -9,26 +9,6 @@ namespace MyBackend.Services;
 
 public class UserService(AppDbContext context, IUserMapper mapper) : IUserService
 {
-    public async Task<UserDto> CreateUserAsync(CreateUserDto dto)
-    {
-        var existingUser = await context.Users.AnyAsync(u => u.Username == dto.Username);
-        if (existingUser)
-            throw new UserAlreadyExistsException("Username is already taken.");
-        
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-        
-        var user = mapper.ToEntity(dto, hashedPassword);
-
-        var defaultRole = await context.Roles.FirstOrDefaultAsync(r => r.Rolename == "User");
-        if (defaultRole is not null)
-            user.Roles = new List<Role> { defaultRole };
-        
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-
-        return mapper.ToDto(user)!;
-    }
-    
     public async Task<List<UserDto>> GetAllUsersAsync()
     {
         // load roles via eager loading
@@ -55,6 +35,26 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
         return mapper.ToDto(user);
     }
     
+    public async Task<UserDto> CreateUserAsync(CreateUserDto dto)
+    {
+        var existingUser = await context.Users.AnyAsync(u => u.Username == dto.Username);
+        if (existingUser)
+            throw new UserAlreadyExistsException("Username is already taken.");
+        
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        
+        var user = mapper.ToEntity(dto, hashedPassword);
+
+        var defaultRole = await context.Roles.FirstOrDefaultAsync(r => r.Rolename == "User");
+        if (defaultRole is not null)
+            user.Roles = new List<Role> { defaultRole };
+        
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        return mapper.ToDto(user)!;
+    }
+    
     public async Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto dto)
     {
         var user = await context.Users
@@ -62,7 +62,7 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
             .FirstOrDefaultAsync(u => u.Id == id);
         
         if (user is null)
-            return null;
+            throw new Exception("User not found");
         
         user.Email = dto.Email ?? user.Email;
 
@@ -75,7 +75,7 @@ public class UserService(AppDbContext context, IUserMapper mapper) : IUserServic
     {
         var user = await context.Users.FindAsync(id);
         if (user is null)
-            return false;
+            throw new Exception("User not found");
 
         context.Users.Remove(user);
         await context.SaveChangesAsync();

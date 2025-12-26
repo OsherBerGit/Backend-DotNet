@@ -10,10 +10,7 @@ namespace MyBackend.Controllers;
 public class PurchaseController(IPurchaseService purchaseService) : ControllerBase
 {
     [NonAction] // change to HttpGet
-    public async Task<ActionResult<List<PurchaseDto>>> GetAllPurchases()
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<ActionResult<List<PurchaseDto>>> GetAllPurchases() { throw new NotImplementedException(); }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<PurchaseDto>> GetPurchaseById(int id)
@@ -68,9 +65,6 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
 
     [NonAction]
     // [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePurchase(int id)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<IActionResult> DeletePurchase(int id) { throw new NotImplementedException(); }
 }
 

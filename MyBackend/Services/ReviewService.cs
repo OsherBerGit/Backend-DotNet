@@ -7,31 +7,6 @@ namespace MyBackend.Services;
 
 public class ReviewService(AppDbContext context, IReviewMapper mapper) : IReviewService
 {
-    public async Task<ReviewDto?> CreateReviewAsync(int userId, CreateReviewDto dto)
-    {
-        var user = await context.Users.FindAsync(userId);
-        if (user is null)
-            throw new Exception("User not found");
-        
-        var product = await context.Products.AnyAsync(p => p.Id == dto.ProductId);
-        if (!product)
-            throw new Exception("Product not found");
-        
-        var existingReview = await context.ProductReviews.AnyAsync(r => r.UserId == userId && r.ProductId == dto.ProductId);
-        if (existingReview)
-            throw new Exception("User has already reviewed this product");
-        
-        var review = mapper.ToEntity(dto);
-        review.UserId = userId;
-        review.CreatedAt = DateTime.UtcNow;
-        review.User = user;
-        
-        context.ProductReviews.Add(review);
-        await context.SaveChangesAsync();
-        
-        return mapper.ToDto(review);
-    }
-
     public async Task<List<ReviewDto>> GetAllReviewsAsync()
     {
         throw new NotImplementedException();
@@ -70,6 +45,31 @@ public class ReviewService(AppDbContext context, IReviewMapper mapper) : IReview
             .ToListAsync();
         
         return reviews.Select(r => mapper.ToDto(r)!).ToList();
+    }
+    
+    public async Task<ReviewDto?> CreateReviewAsync(int userId, CreateReviewDto dto)
+    {
+        var user = await context.Users.FindAsync(userId);
+        if (user is null)
+            throw new Exception("User not found");
+        
+        var product = await context.Products.AnyAsync(p => p.Id == dto.ProductId);
+        if (!product)
+            throw new Exception("Product not found");
+        
+        var existingReview = await context.ProductReviews.AnyAsync(r => r.UserId == userId && r.ProductId == dto.ProductId);
+        if (existingReview)
+            throw new Exception("User has already reviewed this product");
+        
+        var review = mapper.ToEntity(dto);
+        review.UserId = userId;
+        review.CreatedAt = DateTime.UtcNow;
+        review.User = user;
+        
+        context.ProductReviews.Add(review);
+        await context.SaveChangesAsync();
+        
+        return mapper.ToDto(review);
     }
 
     public async Task<ReviewDto?> UpdateReviewAsync(int userId, int id, UpdateReviewDto dto)

@@ -12,12 +12,19 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(CreateUserDto request)
     {
-        var user = await authService.RegisterUserAsync(request);
-        
-        if (user is null)
-            return BadRequest("Username is already taken");
-        
-        return Ok(new { message = "User registered successfully", userId = user.Id });
+        try
+        {
+            var user = await authService.RegisterUserAsync(request);
+            
+            if (user is null)
+                return BadRequest("Username is already taken");
+            
+            return Ok(new { message = "User registered successfully", userId = user.Id });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
     
     [HttpPost("login")]
@@ -34,23 +41,33 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("refresh-token")]
     public async Task<ActionResult<AuthenticationResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        var result = await authService.RefreshTokenAsync(request.Token);
-        
-        if (result is null)
-            return Unauthorized("Invalid refresh token");
-        
-        return Ok(result);
+        try
+        {
+            var result = await authService.RefreshTokenAsync(request.Token);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
     
     [Authorize]
     [HttpPost("revoke")]
     public async Task<IActionResult> Revoke([FromBody] RefreshTokenRequest request)
     {
-        var success = await authService.RevokeTokenAsync(request.Token);
+        try
+        {
+            var success = await authService.RevokeTokenAsync(request.Token);
     
-        if (!success)
-            return BadRequest("Token is invalid or already revoked");
+            if (!success)
+                return BadRequest("Token is invalid or already revoked");
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

@@ -18,7 +18,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto?>> GetUserById(int id)
+    public async Task<ActionResult<UserDto>> GetUserById(int id)
     {
         var user = await userService.GetUserByIdAsync(id);
         if (user is null)
@@ -30,22 +30,44 @@ public class UserController(IUserService userService) : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto dto)
     {
-        var newUser = await userService.CreateUserAsync(dto);
-        return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser); // 201
+        try
+        {
+            var newUser = await userService.CreateUserAsync(dto);
+            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser); // 201
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
     
     [HttpPut("{id}")]
     public async Task<ActionResult<UserDto?>> UpdateUser(int id, UpdateUserDto dto)
     {
-        var updatedUser = await userService.UpdateUserAsync(id, dto);
-        if (updatedUser is null)
-            return NotFound(); // 404
-        return Ok(updatedUser); // 200
+        try
+        {
+            var updatedUser = await userService.UpdateUserAsync(id, dto);
+            if (updatedUser is null)
+                return NotFound(); // 404
+            return Ok(updatedUser); // 200
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
     
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        return await userService.DeleteUserAsync(id) ? NoContent() : NotFound(); // 204 or 404
+        try
+        {
+            var success = await userService.DeleteUserAsync(id); // 204 or 404
+            return success ? NoContent() : NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

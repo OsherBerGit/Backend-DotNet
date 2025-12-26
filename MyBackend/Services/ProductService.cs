@@ -9,20 +9,6 @@ namespace MyBackend.Services;
 
 public class ProductService(AppDbContext context, IProductMapper mapper) : IProductService
 {
-    public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
-    {
-        var existingProduct = await context.Products.AnyAsync(p => p.Name == dto.Name);
-        if (existingProduct)
-            throw new ProductAlreadyExistsException("Product with this name already exists.");
-        
-        var product = mapper.ToEntity(dto);
-        
-        context.Products.Add(product);
-        await context.SaveChangesAsync();
-
-        return mapper.ToDto(product)!;
-    }
-    
     public async Task<List<ProductDto>> GetAllProductsAsync()
     {
         var products = await context.Products
@@ -39,6 +25,20 @@ public class ProductService(AppDbContext context, IProductMapper mapper) : IProd
             .FirstOrDefaultAsync(p => p.Id == id);
         
         return mapper.ToDto(product);
+    }
+    
+    public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
+    {
+        var existingProduct = await context.Products.AnyAsync(p => p.Name == dto.Name);
+        if (existingProduct)
+            throw new ProductAlreadyExistsException("Product with this name already exists.");
+        
+        var product = mapper.ToEntity(dto);
+        
+        context.Products.Add(product);
+        await context.SaveChangesAsync();
+
+        return mapper.ToDto(product)!;
     }
     
     public async Task<ProductDto?> UpdateProductAsync(int id, UpdateProductDto dto)

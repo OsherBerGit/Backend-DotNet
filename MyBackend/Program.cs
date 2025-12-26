@@ -9,6 +9,8 @@ using MyBackend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+bool enableSwagger = false;
+
 // Configure CORS
 builder.Services.AddCors(options =>
 {
@@ -21,7 +23,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configure Authentication
+// Configure Authentication & JWT
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -43,6 +45,20 @@ builder.Services.AddAuthentication(options =>
             
             ClockSkew = TimeSpan.Zero 
         };
+        
+        // checks if there's a refresh token is valid, otherwise takes from the cookie
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Cookies["X-Access-Token"];
+                
+                if (!string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(context.Token))
+                    context.Token = accessToken;
+                
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -55,7 +71,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-// Configure Services
+// Configure Services (Dependency Injection)
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -67,44 +83,49 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IReviewMapper, ReviewMapper>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 
-builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 
 // Configure Swagger (commented out as you're using views)
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+if (enableSwagger)
 {
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(c =>
     {
-        Description = "הכנס את הטוקן כך: Bearer {your_token}",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
-            new OpenApiSecurityScheme
+            Description = "Enter a token like this: Bearer {your_token}",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
             {
-                Reference = new OpenApiReference
+                new OpenApiSecurityScheme
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+        });
     });
-});
+}
 
 var app = builder.Build();
+
 app.UseCors("FrontendPolicy");
 
 // Enable static files (CSS, JS, images)
 app.UseStaticFiles();
 
-if (app.Environment.IsDevelopment())
+// Swagger Pipeline
+if (enableSwagger && app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -128,8 +149,8 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
-    DbSeeder.SeedData(context);
+    // context.Database.Migrate();
+    // DbSeeder.SeedData(context);
 }
 
 app.Run();
