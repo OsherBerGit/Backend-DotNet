@@ -9,8 +9,6 @@ using MyBackend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-bool enableSwagger = false;
-
 // Configure CORS
 builder.Services.AddCors(options =>
 {
@@ -47,18 +45,16 @@ builder.Services.AddAuthentication(options =>
         };
         
         // checks if there's a refresh token is valid, otherwise takes from the cookie
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Cookies["X-Access-Token"];
-                
-                if (!string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(context.Token))
-                    context.Token = accessToken;
-                
-                return Task.CompletedTask;
-            }
-        };
+        // options.Events = new JwtBearerEvents
+        // {
+        //     OnMessageReceived = context =>
+        //     {
+        //         var accessToken = context.Request.Cookies["X-Access-Token"];
+        //         if (!string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(context.Token))
+        //             context.Token = accessToken;
+        //         return Task.CompletedTask;
+        //     }
+        // };
     });
 
 builder.Services.AddAuthorization();
@@ -67,9 +63,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add MVC with views and Razor pages support
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+// Add Controllers
+builder.Services.AddControllers();
 
 // Configure Services (Dependency Injection)
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -85,47 +80,41 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 
 builder.Services.AddHttpContextAccessor();
 
-// Configure Swagger (commented out as you're using views)
-if (enableSwagger)
+// Configure Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
 {
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(c =>
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Description = "Enter a token like this: Bearer {your_token}",
-            Name = "Authorization",
-            In = ParameterLocation.Header,
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer"
-        });
-
-        c.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] { }
-            }
-        });
+        Description = "Enter a token like this: Bearer {your_token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
     });
-}
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+});
 
 var app = builder.Build();
 
 app.UseCors("FrontendPolicy");
 
-// Enable static files (CSS, JS, images)
-app.UseStaticFiles();
-
 // Swagger Pipeline
-if (enableSwagger && app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -141,9 +130,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Map default route for MVC views
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// app.MapControllerRoute(
+//     name: "default",
+//     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Seed database with test data
 using (var scope = app.Services.CreateScope())
