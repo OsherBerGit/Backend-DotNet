@@ -1,5 +1,6 @@
 # 🛒 DotNet API - E-Commerce Backend
 
+![C#](https://img.shields.io/badge/Language-C%23-178600)
 ![.NET 8](https://img.shields.io/badge/Framework-.NET%208-512BD4) <!-- ?logo=dotnet&logoColor=white -->
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791) <!-- ?logo=postgresql&logoColor=white -->
 ![EF Core](https://img.shields.io/badge/Entity%20Framework%20Core-512BD4?logo=.net&logoColor=white)
